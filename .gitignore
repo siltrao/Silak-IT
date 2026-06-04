@@ -1,0 +1,15 @@
+*.tfstate
+*.tfstate.backup
+
+.terraform/
+.terraform.lock.hcl
+
+*.retry
+
+.env
+
+*.pem
+*.key
+
+secrets.tfvars
+terraform.tfvars

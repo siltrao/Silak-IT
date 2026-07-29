@@ -1,0 +1,8 @@
+
+---
+- name: Déploiement du serveur Web
+  hosts: webservers
+  become: true
+
+  roles:
+    - apache

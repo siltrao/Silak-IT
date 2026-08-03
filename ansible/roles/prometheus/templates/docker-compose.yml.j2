@@ -1,0 +1,41 @@
+services:
+  prometheus:
+    image: "{{ prometheus_image }}"
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "{{ prometheus_port }}:9090"
+    volumes:
+      - "{{ monitoring_base_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+
+  alertmanager:
+    image: "{{ alertmanager_image }}"
+    container_name: alertmanager
+    restart: unless-stopped
+    ports:
+      - "{{ alertmanager_port }}:9093"
+    volumes:
+      - "{{ monitoring_base_dir }}/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml"
+
+  node_exporter:
+    image: "{{ node_exporter_image }}"
+    container_name: node_exporter
+    restart: unless-stopped
+    network_mode: host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    command:
+      - "--path.rootfs=/host"
+
+  grafana:
+    image: "{{ grafana_image }}"
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "{{ grafana_port }}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  grafana_data:

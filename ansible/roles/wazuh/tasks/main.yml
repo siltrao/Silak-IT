@@ -1,0 +1,67 @@
+---
+- name: Installer les dependances systeme
+  apt:
+    name:
+      - curl
+      - apt-transport-https
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: Regler vm.max_map_count (prerequis OpenSearch/Wazuh-indexer)
+  sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present
+    reload: true
+
+- name: Ajouter la cle GPG du depot Wazuh
+  command: curl -so /usr/share/keyrings/wazuh.asc -L https://packages.wazuh.com/key/GPG-KEY-WAZUH
+  args:
+    creates: /usr/share/keyrings/wazuh.asc
+
+- name: Corriger les permissions de la cle GPG
+  file:
+    path: /usr/share/keyrings/wazuh.asc
+    mode: "0644"
+
+
+- name: Ajouter le depot APT Wazuh
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/wazuh.asc] https://packages.wazuh.com/4.x/apt/ stable main"
+    filename: wazuh
+    state: present
+    update_cache: true
+
+- name: Installer wazuh-indexer
+  apt:
+    name: wazuh-indexer
+    state: present
+
+- name: Installer wazuh-manager
+  apt:
+    name: wazuh-manager
+    state: present
+
+- name: Installer wazuh-dashboard
+  apt:
+    name: wazuh-dashboard
+    state: present
+
+- name: Activer et demarrer wazuh-indexer
+  systemd:
+    name: wazuh-indexer
+    state: started
+    enabled: true
+
+- name: Activer et demarrer wazuh-manager
+  systemd:
+    name: wazuh-manager
+    state: started
+    enabled: true
+
+- name: Activer et demarrer wazuh-dashboard
+  systemd:
+    name: wazuh-dashboard
+    state: started
+    enabled: true

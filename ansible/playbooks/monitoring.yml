@@ -1,0 +1,7 @@
+---
+- name: Déploiement de la stack de supervision (vm-monitoring)
+  hosts: vm-monitoring
+  become: true
+  roles:
+    - prometheus
+    - grafana

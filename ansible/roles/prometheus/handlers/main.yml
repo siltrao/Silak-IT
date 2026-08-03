@@ -1,0 +1,6 @@
+---
+- name: Redémarrer la stack de supervision
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_base_dir }}"
+    state: present
+    recreate: always

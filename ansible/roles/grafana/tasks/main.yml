@@ -1,0 +1,25 @@
+---
+- name: Attendre que Grafana soit prêt
+  uri:
+    url: "http://localhost:{{ grafana_port }}/api/health"
+    status_code: 200
+  register: grafana_health
+  until: grafana_health.status == 200
+  retries: 10
+  delay: 5
+
+- name: Ajouter Prometheus comme datasource dans Grafana
+  uri:
+    url: "http://localhost:{{ grafana_port }}/api/datasources"
+    method: POST
+    user: admin
+    password: admin
+    force_basic_auth: true
+    body_format: json
+    body:
+      name: Prometheus
+      type: prometheus
+      url: "http://prometheus:9090"
+      access: proxy
+      isDefault: true
+    status_code: [200, 409]

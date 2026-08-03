@@ -1,0 +1,18 @@
+---
+monitoring_base_dir: /opt/monitoring
+
+prometheus_image: prom/prometheus:latest
+alertmanager_image: prom/alertmanager:latest
+node_exporter_image: prom/node-exporter:latest
+grafana_image: grafana/grafana:latest
+
+prometheus_port: 9090
+alertmanager_port: 9093
+node_exporter_port: 9100
+grafana_port: 3000
+
+# Cibles à scraper (VM du VLAN monitoring/web/db etc.)
+prometheus_scrape_targets:
+  - "vm-web:9100"
+  - "vm-db:9100"
+  - "vm-monitoring:9100"

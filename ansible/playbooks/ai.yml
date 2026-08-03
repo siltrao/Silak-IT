@@ -1,0 +1,6 @@
+---
+- name: Déploiement de Silak Assistant (vm-ai)
+  hosts: ai
+  become: true
+  roles:
+    - ollama

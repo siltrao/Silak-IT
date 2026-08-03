@@ -1,0 +1,58 @@
+---
+- name: Installer les dependances systeme
+  apt:
+    name:
+      - curl
+      - git
+      - python3
+      - python3-pip
+      - python3-venv
+    state: present
+    update_cache: true
+
+- name: Installer Ollama
+  shell: curl -fsSL https://ollama.com/install.sh | sh
+  args:
+    creates: /usr/local/bin/ollama
+
+- name: Demarrer et activer le service Ollama
+  systemd:
+    name: ollama
+    state: started
+    enabled: true
+
+- name: Telecharger le modele Llama 3.2 3B
+  command: ollama pull {{ ollama_model }}
+  register: ollama_pull
+  changed_when: "'success' in ollama_pull.stdout or ollama_pull.rc == 0"
+
+- name: Cloner ou mettre a jour le depot Silak-IT
+  git:
+    repo: "{{ silak_repo_url }}"
+    dest: "{{ silak_install_dir }}"
+    version: master
+    force: true
+
+- name: Creer un environnement virtuel Python pour Silak Assistant
+  command: python3 -m venv {{ silak_install_dir }}/silak-assistant/venv
+  args:
+    creates: "{{ silak_install_dir }}/silak-assistant/venv/bin/activate"
+
+- name: Installer les dependances Python de Silak Assistant
+  pip:
+    requirements: "{{ silak_install_dir }}/silak-assistant/requirements.txt"
+    virtualenv: "{{ silak_install_dir }}/silak-assistant/venv"
+
+- name: Deployer le service systemd pour Streamlit
+  template:
+    src: silak-assistant.service.j2
+    dest: /etc/systemd/system/silak-assistant.service
+    mode: "0644"
+  notify: Restart Silak Assistant
+
+- name: Activer et demarrer le service Silak Assistant
+  systemd:
+    name: silak-assistant
+    state: started
+    enabled: true
+    daemon_reload: true

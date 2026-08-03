@@ -1,0 +1,6 @@
+---
+silak_repo_url: "https://github.com/siltrao/Silak-IT.git"
+silak_install_dir: "/opt/Silak-IT"
+ollama_model: "llama3.2:3b"
+streamlit_port: 8501
+

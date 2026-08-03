@@ -1,0 +1,6 @@
+---
+- name: Restart Silak Assistant
+  systemd:
+    name: silak-assistant
+    state: restarted
+    daemon_reload: true

@@ -1,0 +1,6 @@
+---
+- name: Déploiement de Wazuh (vm-soc)
+  hosts: soc
+  become: true
+  roles:
+    - wazuh

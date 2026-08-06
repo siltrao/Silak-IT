@@ -10,8 +10,13 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+
+      - name: Verification d integrite de l image de reference
+        run: bash scripts/verify-template.sh
+
       - name: Terraform Format Check
         run: terraform -chdir=terraform fmt -check
+
       - name: Terraform Validate
         run: |
           terraform -chdir=terraform init -backend=false

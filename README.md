@@ -1,66 +1,74 @@
-# Silak-IT — Projet de Fin de Formation
+cat > README.md << 'EOF'
+# Silak-IT
 
-**Conception et déploiement d'une plateforme intelligente d'administration et de cybersécurité pour l'entreprise Silak-IT**
+**Une offre packagée B2B d'infrastructure sécurisée et automatisée, augmentée d'un assistant IA d'exploitation.**
 
-Projet de fin de formation Ingénieur Systèmes Réseaux et Cybersécurité, mettant en œuvre une infrastructure complète (Infrastructure as Code, supervision, cybersécurité) enrichie par **Silak Assistant**, un assistant IA local d'exploitation.
+Silak-IT est un produit conçu et développé par [Teka.com](https://teka.com), entreprise spécialisée depuis deux décennies dans l'installation réseau et le déploiement d'infrastructures télécom. Ce dépôt contient l'ensemble du code source du produit : infrastructure as code, automatisation, et l'assistant intelligent qui l'accompagne.
 
-## Contexte
+> Projet réalisé dans le cadre d'un Mastère Ingénieur Systèmes, Réseaux et Cybersécurité (Titre RNCP 38105), en alternance chez Teka.com.
 
-Silak-IT est une entreprise fictive (ESN) servant de fil conducteur pédagogique au projet. L'objectif est de concevoir une infrastructure réseau segmentée, automatisée et supervisée, intégrant un assistant intelligent capable d'interagir avec cette infrastructure en langage naturel.
+---
 
-## Architecture cible
+## Le produit
 
-Infrastructure virtualisée sous Proxmox, organisée en 6 VLAN dédiés, chacun correspondant à un niveau de sensibilité et un usage métier distinct :
+Silak-IT s'adresse aux PME et ESN ne disposant pas des ressources internes pour déployer et exploiter une infrastructure informatique complète. Il combine deux briques indissociables :
 
-| VLAN | Nom | VM/CT | Rôle |
-|---|---|---|---|
-| 10 | Administration | vm-ldap | Annuaire LDAP centralisé |
-| 20 | Web | vm-web | Apache/PHP |
-| 30 | Base SQL | vm-db | MariaDB |
-| 40 | Monitoring | vm-monitoring | Prometheus, Grafana, Alertmanager |
-| 50 | IA / SOC | vm-ai, vm-soc | Silak Assistant (Ollama), Wazuh |
-| 60 | Payroll | vm-payroll | Logiciel de paie (isolé) |
+- **Une infrastructure automatisée** — provisioning, configuration, supervision et cybersécurité, entièrement pilotés par code (Terraform, Ansible)
+- **Silak Assistant** — un assistant IA local, capable d'interagir en langage naturel avec cette infrastructure pour en faciliter l'exploitation quotidienne
 
-Un conteneur LXC dédié (`vm-devops`) héberge les outils d'Infrastructure as Code (Terraform, Ansible, Git), point d'entrée unique pour reconstruire l'ensemble de l'infrastructure.
+### Les quatre piliers de l'offre
 
-Détails complets : [`docs/architecture/`](docs/architecture/) · [`docs/cybersecurite/`](docs/cybersecurite/)
+| Pilier | Description |
+|---|---|
+| Infrastructure automatisée | Provisioning et configuration reproductibles (Terraform, Ansible) |
+| Sécurité renforcée | Segmentation réseau, durcissement, détection d'intrusion (SOC) |
+| Supervision continue | Visibilité en temps réel sur l'état du parc (Prometheus, Grafana) |
+| Exploitation assistée par IA | Interaction en langage naturel avec l'infrastructure (Silak Assistant) |
+
+---
+
+## Architecture
+
+L'infrastructure repose sur Proxmox, segmentée en **9 VLAN** selon le niveau de sensibilité de chaque service :
+
+| VLAN | Nom | Rôle |
+|---|---|---|
+| 10 | Administration | Annuaire LDAP, poste IaC, runner CI/CD |
+| 20 | Web / DMZ | Application web exposée |
+| 30 | Base SQL | Base de données (PostgreSQL) |
+| 40 | Monitoring | Prometheus, Grafana, Alertmanager |
+| 50 | IA | Silak Assistant (Ollama) |
+| 60 | Payroll | Logiciel de paie — isolement strict |
+| 70 | SOC | Wazuh — détection de sécurité |
+| 80 | RH | Accès limité à l'application de paie |
+| 90 | Users | Accès limité au service web |
+
+L'accès à l'infrastructure suit un modèle de bastion strict : toute administration transite par `vm-devops`, aucune VM métier n'étant directement exposée.
+
+---
 
 ## Silak Assistant
 
-Assistant IA local (Ollama, modèle Llama 3.2 3B), exposé via une interface web Streamlit, capable de :
-- Répondre aux questions sur l'architecture et la configuration du projet
-- Interroger l'état de l'infrastructure en langage naturel via Prometheus
+L'élément différenciant du produit : un assistant IA exécuté localement (Ollama / Llama 3.2), sans dépendance à une API cloud externe, structuré en trois volets :
 
-Silak Assistant s'appuie sur les données réelles de l'infrastructure plutôt que sur un simple LLM générique — c'est l'interface intelligente de Silak-IT.
+- **Savoir** — répond aux questions sur l'architecture et la configuration de l'infrastructure (RAG sur la documentation technique)
+- **Voir** — restitue l'état de santé de l'infrastructure en temps réel (interrogation de Prometheus)
+- **Veiller** — surveille les signaux de sécurité et les tentatives d'intrusion (fail2ban)
 
-Documentation détaillée : [`docs/ia/silak-assistant.md`](docs/ia/silak-assistant.md)
+Le code source de l'assistant se trouve dans [`silak-assistant/`](./silak-assistant).
 
-## Feuille de route de mise en œuvre
-
-| Phase | Contenu |
-|---|---|
-| 1 | Infrastructure réseau (routeur, VLAN, filtrage) |
-| 2 | Provisioning des VM (Terraform) |
-| 3 | Automatisation de la configuration (Ansible) |
-| 4 | Durcissement sécurité (SSH par clés, nftables) |
-| 5 | Supervision (Prometheus, Grafana) |
-| 6 | SOC (Wazuh) |
-| 7 | Silak Assistant (IA) |
-| 8 | Intégration CI/CD |
-
-## Structure du dépôt
-## Déploiement
-
-```bash
-git clone https://github.com/siltrao/Silak-IT.git
-cd Silak-IT/terraform
-terraform init
-terraform apply
-
-cd ../ansible
-ansible-playbook -i inventory/hosts.yml playbooks/monitoring.yml
-```
+---
 
 ## Sécurité
 
-Segmentation VLAN stricte, authentification SSH par clés, annuaire LDAP centralisé, supervision de sécurité via Wazuh.
+- Segmentation réseau stricte, filtrage nftables, authentification SSH par clés, fail2ban
+- VPN WireGuard avec profils d'accès différenciés (administrateur, RH, utilisateur)
+- Vérification d'intégrité des images système (empreinte SHA-256) avant tout déploiement
+- Pipeline CI (GitHub Actions, runner auto-hébergé isolé) validant le code avant application
+- SOC (Wazuh) — détection validée par simulation d'attaque réelle, classification MITRE ATT&CK
+
+Le détail complet est documenté dans [`docs/cybersecurite/`](./docs/cybersecurite).
+
+---
+
+## Structure du dépôt

@@ -1,6 +1,6 @@
-resource "proxmox_virtual_environment_vm" "vm_web" {
-  name      = "vm-web"
-  vm_id     = 120
+resource "proxmox_virtual_environment_vm" "vm_runner" {
+  name      = "vm-runner"
+  vm_id     = 165
   node_name = var.target_node
   on_boot   = false
   started   = false
@@ -11,7 +11,7 @@ resource "proxmox_virtual_environment_vm" "vm_web" {
     cores = 1
   }
   memory {
-    dedicated = 512
+    dedicated = 1024
   }
   disk {
     datastore_id = "local-lvm"
@@ -23,13 +23,13 @@ resource "proxmox_virtual_environment_vm" "vm_web" {
   }
   network_device {
     bridge  = "vmbr1"
-    vlan_id = 20
+    vlan_id = 10
   }
   initialization {
     ip_config {
       ipv4 {
-        address = "192.168.20.10/24"
-        gateway = "192.168.20.1"
+        address = "192.168.10.20/24"
+        gateway = "192.168.10.1"
       }
     }
     dns {

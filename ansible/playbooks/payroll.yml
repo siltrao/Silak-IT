@@ -1,0 +1,7 @@
+# ansible/playbooks/payroll.yml
+---
+- name: Deploiement de la simulation vm-payroll
+  hosts: payroll
+  become: true
+  roles:
+    - payroll

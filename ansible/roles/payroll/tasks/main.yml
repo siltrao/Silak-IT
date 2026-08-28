@@ -1,2 +1,70 @@
 ---
-# tasks file for ansible/roles/payroll
+- name: Installer Apache
+  apt:
+    name: apache2
+    state: present
+    update_cache: true
+
+- name: Deployer la page de simulation
+  copy:
+    content: |
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8">
+        <title>Silak-IT - Logiciel de paie</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+          }
+          .card {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 600px;
+            text-align: center;
+          }
+          h1 {
+            color: #2c3e50;
+            font-size: 24px;
+          }
+          .badge {
+            display: inline-block;
+            background-color: #e67e22;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
+          }
+          p {
+            color: #555;
+            line-height: 1.6;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <span class="badge">VLAN 60 - Isole</span>
+          <h1>Logiciel de paie (legacy)</h1>
+          <p>Ce service represente un logiciel metier de gestion de paie herite,
+          isole dans un VLAN dedie pour des raisons de securite.</p>
+          <p><strong>Silak-IT</strong> - Infrastructure securisee</p>
+        </div>
+      </body>
+      </html>
+    dest: /var/www/html/index.html
+    mode: "0644"
+
+- name: Demarrer Apache
+  systemd:
+    name: apache2
+    state: started
+    enabled: true

@@ -1,0 +1,6 @@
+---
+- name: Deploiement de PostgreSQL (vm-db)
+  hosts: databases
+  become: true
+  roles:
+    - postgresql

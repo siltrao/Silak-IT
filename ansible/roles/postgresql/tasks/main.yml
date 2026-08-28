@@ -1,2 +1,43 @@
 ---
-# tasks file for ansible/roles/postgresql
+- name: Installer PostgreSQL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2
+    state: present
+    update_cache: true
+
+- name: Demarrer et activer PostgreSQL
+  systemd:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Creer l'utilisateur applicatif
+  become_user: postgres
+  postgresql_user:
+    name: "{{ postgresql_app_user }}"
+    password: "{{ postgresql_app_password }}"
+    state: present
+
+- name: Creer la base de donnees applicative
+  become_user: postgres
+  postgresql_db:
+    name: "{{ postgresql_db_name }}"
+    owner: "{{ postgresql_app_user }}"
+    state: present
+
+- name: Autoriser les connexions depuis le VLAN Web (pg_hba.conf)
+  lineinfile:
+    path: /etc/postgresql/17/main/pg_hba.conf
+    line: "host    {{ postgresql_db_name }}    {{ postgresql_app_user }}    {{ postgresql_allowed_network }}    scram-sha-256"
+    insertafter: EOF
+  notify: Redemarrer PostgreSQL
+
+- name: Ecouter sur toutes les interfaces
+  lineinfile:
+    path: /etc/postgresql/17/main/postgresql.conf
+    regexp: "^#?listen_addresses"
+    line: "listen_addresses = '*'"
+  notify: Redemarrer PostgreSQL

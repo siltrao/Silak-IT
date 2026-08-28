@@ -1,2 +1,5 @@
 ---
-# defaults file for ansible/roles/postgresql
+postgresql_db_name: "silak_app"
+postgresql_app_user: "silak_user"
+postgresql_app_password: "{{ vault_postgresql_app_password | default('ChangeMe123!') }}"
+postgresql_allowed_network: "192.168.20.0/24"

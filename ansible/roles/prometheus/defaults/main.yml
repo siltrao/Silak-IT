@@ -13,6 +13,6 @@ grafana_port: 3000
 
 # Cibles à scraper (VM du VLAN monitoring/web/db etc.)
 prometheus_scrape_targets:
-  - "vm-web:9100"
-  - "vm-db:9100"
-  - "vm-monitoring:9100"
+  - "192.168.20.10:9100"
+  - "192.168.30.10:9100"
+  - "192.168.40.10:9100"

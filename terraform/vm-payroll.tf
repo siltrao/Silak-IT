@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_vm" "vm-payroll" {
+resource "proxmox_virtual_environment_vm" "vm_payroll" {
   name      = "vm-payroll"
   vm_id     = 140
   node_name = var.target_node

@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Silak-IT
 
 **Une offre packagée B2B d'infrastructure sécurisée et automatisée, augmentée d'un assistant IA d'exploitation.**
